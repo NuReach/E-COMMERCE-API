@@ -17,6 +17,8 @@ mongoose.connect(process.env.MONGODB_URI).then(()=>{
 
 const app = express();
 const PORT = 3000;
+app.use(express.json());
+app.use(express.urlencoded({extended : true}));
 app.use(cors());
 
 app.use(`/api/seed`,seedRoutes);
