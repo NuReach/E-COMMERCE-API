@@ -2,6 +2,7 @@ import express from 'express';
 import User from '../models/userModel.js';
 import expressAsyncHandler from 'express-async-handler';
 import { generateToken } from '../utils/generateToken.js';
+import bcrypt from 'bcryptjs';  
 
 
 const userRoutes = express.Router();
@@ -45,7 +46,7 @@ userRoutes.get(
             _id: user._id,
             name: user.name,
             email: user.email,
-            isAdmin: user.isAdmin,
+            isAdmin: user.isAdmin, 
             token: generateToken(user),
           });
           return;
