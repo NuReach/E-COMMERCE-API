@@ -3,6 +3,8 @@ import data from './data.js';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import seedRouter from './routes/seedRouter.js';
+import productRouter from './routes/productRouter.js';
 
 dotenv.config();
 
@@ -17,18 +19,9 @@ const app = express();
 const PORT = 3000;
 app.use(cors());
 
-// Define a route for the "hello" API
-app.get('/api/products', (req, res) => {
-  res.send(data.products);
-});
-app.get('/api/products/:id', (req, res) => {
-    const product = data.products.find((x)=>x.id == req.params.id);
-    if (product) {
-        res.send(product);
-    }else{
-        res.status(404).send({message:"Product Not <Found></Found>"})
-    }
-  });
+app.use(`/api/seed`,seedRouter);
+
+app.use(`/api/products`,productRouter);
 
 // Start the server
 app.listen(PORT, () => {
