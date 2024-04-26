@@ -1,9 +1,9 @@
 import express from 'express';
 import Product from '../models/productModel.js';
 
-const productRouter = express.Router();
+const productRoutes = express.Router();
 
-productRouter.get('/', async (req, res) => {
+productRoutes.get('/', async (req, res) => {
     try {
       const products = await Product.find({});
       res.json(products);
@@ -13,7 +13,7 @@ productRouter.get('/', async (req, res) => {
     }
   });
 
-  productRouter.get('/:id', async (req, res) => {
+  productRoutes.get('/:id', async (req, res) => {
     try {
       const productId = req.params.id;
   
@@ -30,7 +30,7 @@ productRouter.get('/', async (req, res) => {
     }
   });
 
-  productRouter.post('/', async (req, res) => {
+  productRoutes.post('/', async (req, res) => {
     try {
       const newProduct = new Product(req.body);
   
@@ -42,7 +42,7 @@ productRouter.get('/', async (req, res) => {
     }
   });
 
-  productRouter.put('/:id', async (req, res) => {
+  productRoutes.put('/:id', async (req, res) => {
     try {
       const productId = req.params.id;
   
@@ -63,7 +63,7 @@ productRouter.get('/', async (req, res) => {
   });
 
 
-  productRouter.delete('/:id', async (req, res) => {
+  productRoutes.delete('/:id', async (req, res) => {
     try {
       const productId = req.params.id;
   
@@ -80,4 +80,4 @@ productRouter.get('/', async (req, res) => {
     }
   });
 
-  export default productRouter;
+  export default productRoutes;

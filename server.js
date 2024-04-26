@@ -1,10 +1,10 @@
 import express from 'express';
-import data from './data.js';
 import cors from 'cors';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import seedRouter from './routes/seedRouter.js';
-import productRouter from './routes/productRouter.js';
+import productRoutes from './routes/productRoutes.js';
+import seedRoutes from './routes/seedRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 dotenv.config();
 
@@ -19,9 +19,11 @@ const app = express();
 const PORT = 3000;
 app.use(cors());
 
-app.use(`/api/seed`,seedRouter);
+app.use(`/api/seed`,seedRoutes);
 
-app.use(`/api/products`,productRouter);
+app.use(`/api/products`,productRoutes);
+
+app.use(`/api/users`,userRoutes);
 
 // Start the server
 app.listen(PORT, () => {
