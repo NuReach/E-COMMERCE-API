@@ -35,17 +35,17 @@ app.get(`/api/key/paypal` , (req,res)=>{
   res.send(process.env.PAYPAL_CLIENT_ID || 'sb');
 })
 
-const __dirname = path.resolve();
-app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
+//const __dirname = path.resolve();
+// app.use(express.static(path.join(__dirname, '..', 'frontend', 'build')));
 
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(__dirname,'..', 'frontend', 'build', 'index.html'));
-});
+// app.get('*', (req, res) => {
+//   res.sendFile(path.resolve(__dirname,'..', 'frontend', 'build', 'index.html'));
+// });
 
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send({ message: 'Something broke!' });
-});
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send({ message: 'Something broke!' });
+// });
 
 app.listen(PORT, () => {
   console.log(`Server at http://localhost:${PORT}`);
