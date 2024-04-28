@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import productRoutes from './routes/productRouter.js';
 import seedRoutes from './routes/seedRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import orderRouter from './routes/orderRouter.js';
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ app.use(`/api/seed`,seedRoutes);
 app.use(`/api/products`,productRoutes);
 
 app.use(`/api/users`,userRoutes);
+
+app.use(`/api/orders`,orderRouter);
+
 
 // Start the server
 app.listen(PORT, () => {
