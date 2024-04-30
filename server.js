@@ -7,6 +7,7 @@ import seedRoutes from './routes/seedRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import orderRouter from './routes/orderRouter.js';
 import path from 'path';
+import uploadRouter from './routes/uploadRouter.js';
 
 dotenv.config();
 
@@ -22,6 +23,8 @@ const PORT = 3000;
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(cors());
+
+app.use('/api/upload', uploadRouter);
 
 app.use(`/api/seed`,seedRoutes);
 

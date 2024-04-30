@@ -1,6 +1,8 @@
 import express from 'express';
 import Product from '../models/productModel.js';
 import expressAsyncHandler from 'express-async-handler';
+import { isAuth } from '../utils/isAuth.js';
+import { isAdmin } from '../utils/IsAdmin.js';
 
 const productRoute = express.Router();
 
@@ -31,37 +33,49 @@ productRoute.get('/', async (req, res) => {
     }
   });
 
-  productRoute.post('/', async (req, res) => {
-    try {
-      const newProduct = new Product(req.body);
-  
-      const createdProduct = await newProduct.save();
-      res.status(201).json(createdProduct); // Created (201) status for new resources
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).send('Error creating product'); // Internal Server Error (500) for generic errors
-    }
-  });
-
-  productRoute.put('/:id', async (req, res) => {
-    try {
-      const productId = req.params.id;
-  
-      const updatedProduct = await Product.findByIdAndUpdate(productId, req.body, {
-        new: true, // Return the updated document
-        runValidators: true, // Enforce validation rules on update
+  productRoute.post(
+    '/create',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+      const newProduct = new Product({
+        name: req.body.name,
+        slug:  req.body.slug,
+        image:  req.body.image,
+        price:  req.body.price,
+        category: req.body.category ,
+        countInStock:  req.body.countInStock,
+        rating: 0,
+        numReviews: 0,
+        description:  req.body.description,
       });
-  
-      if (!updatedProduct) {
-        return res.status(404).send('Product not found'); // Not Found (404) for missing product
+      const product = await newProduct.save();
+      res.send({ message: 'Product Created', product });
+    })
+  );
+
+  productRoute.put(
+    '/update/:id',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+      const productId = req.params.id;
+      const product = await Product.findById(productId);
+      if (product) {
+        product.name = req.body.name;
+        product.slug = req.body.slug;
+        product.price = req.body.price;
+        product.image = req.body.image;
+        product.category = req.body.category;
+        product.countInStock = req.body.countInStock;
+        product.description = req.body.description;
+        await product.save();
+        res.send({ message: 'Product Updated' });
+      } else {
+        res.status(404).send({ message: 'Product Not Found' });
       }
-  
-      res.json(updatedProduct);
-    } catch (error) {
-      console.error(error.message);
-      res.status(500).send('Error updating product');
-    }
-  });
+    })
+  );
 
 
   productRoute.delete('/:id', async (req, res) => {
@@ -119,7 +133,7 @@ productRoute.get('/', async (req, res) => {
           }
         const count = await Product.countDocuments(searchQuery);
         const products = await Product.find(searchQuery)
-        .sort(order !== 'newest' ? { createdAt: -1 } : {}) // Sort by order if provided
+        .sort(order !== 'oldest' ? { createdAt: -1 } : {}) // Sort by order if provided
         .skip((page - 1) * limit)
         .limit(limit);
       res.send({ products, page, count , pages : Math.ceil(count/limit) });
@@ -128,5 +142,29 @@ productRoute.get('/', async (req, res) => {
       res.status(500).send({message : 'Error fetching categories' });
     }
   }));
+
+  const PAGE_SIZE = 3;
+
+productRoute.get(
+  '/admin/list',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const { query } = req;
+    const page = query.page || 1;
+    const pageSize = query.pageSize || PAGE_SIZE;
+
+    const products = await Product.find()
+      .skip(pageSize * (page - 1))
+      .limit(pageSize);
+    const countProducts = await Product.countDocuments();
+    res.send({
+      products,
+      countProducts,
+      page,
+      pages: Math.ceil(countProducts / pageSize),
+    });
+  })
+);
 
   export default productRoute;
