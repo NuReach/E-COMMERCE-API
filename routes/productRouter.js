@@ -78,20 +78,20 @@ productRoute.get('/', async (req, res) => {
   );
 
 
-  productRoute.delete('/:id', async (req, res) => {
+  productRoute.delete('/delete/:id', async (req, res) => {
     try {
       const productId = req.params.id;
   
       const deletedProduct = await Product.findByIdAndDelete(productId);
   
       if (!deletedProduct) {
-        return res.status(404).send('Product not found');
+        return res.status(404).send({message:'Product not found'});
       }
   
       res.json({ message: 'Product deleted successfully' });
     } catch (error) {
       console.error(error.message);
-      res.status(500).send('Error deleting product');
+      res.status(500).send({message:'Error deleting product'});
     }
   });
 
@@ -143,13 +143,13 @@ productRoute.get('/', async (req, res) => {
     }
   }));
 
-  const PAGE_SIZE = 3;
-
-productRoute.get(
-  '/admin/list',
-  isAuth,
-  isAdmin,
-  expressAsyncHandler(async (req, res) => {
+  
+  productRoute.get(
+    '/admin/list',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+    const PAGE_SIZE = 3;
     const { query } = req;
     const page = query.page || 1;
     const pageSize = query.pageSize || PAGE_SIZE;
