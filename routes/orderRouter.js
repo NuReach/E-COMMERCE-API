@@ -142,5 +142,19 @@ orderRouter.get(
     res.send({ users, orders, dailyOrders, productCategories });
   })
 );
+
+orderRouter.delete(
+  '/delete/:id',
+  isAuth,
+  isAdmin,
+  expressAsyncHandler(async (req, res) => {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (order) {
+      res.send({ message: 'Order Deleted' });
+    } else {
+      res.status(404).send({ message: 'Order Not Found' });
+    }
+  })
+);
   
 export default orderRouter;

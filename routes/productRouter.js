@@ -78,7 +78,7 @@ productRoute.get('/', async (req, res) => {
   );
 
 
-  productRoute.delete('/delete/:id', async (req, res) => {
+  productRoute.delete('delete/:id', async (req, res) => {
     try {
       const productId = req.params.id;
   
@@ -91,7 +91,7 @@ productRoute.get('/', async (req, res) => {
       res.json({ message: 'Product deleted successfully' });
     } catch (error) {
       console.error(error.message);
-      res.status(500).send({message:'Error deleting product'});
+      res.status(500).send({message :'Error deleting product'});
     }
   });
 
