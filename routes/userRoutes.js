@@ -103,6 +103,53 @@ userRoutes.get(
     })
   );
 
+    userRoutes.post(
+    '/signin',
+    expressAsyncHandler(async (req, res) => {
+      const user = await User.findOne({ email: req.body.email });
+      if (user) {
+        if (bcrypt.compareSync(req.body.password, user.password)) {
+          res.send({
+            _id: user._id,
+            name: user.name,
+            email: user.email,
+            isAdmin: user.isAdmin, 
+            token: generateToken(user),
+          });
+          return;
+        }
+      }
+      res.status(401).send({ message: 'Invalid email or password' });
+    })
+  );
+
+  userRoutes.post(
+    '/register',
+    expressAsyncHandler(async (req, res) => {
+      const { name, email, password } = req.body;
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        res.status(400).send({ message: 'Email is already registered' });
+        return;
+      }
+      const newUser = new User({
+        name,
+        email,
+        password: bcrypt.hashSync(password, 8),
+        isAdmin: false,
+      });
+      await newUser.save();
+      const token = generateToken(newUser);
+      res.status(201).send({
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        isAdmin: newUser.isAdmin,
+        token,
+      });
+    })
+  );
+
   userRoutes.put(
     '/profile',
     isAuth,
@@ -146,6 +193,25 @@ userRoutes.get(
       } catch (error) {
         console.error(error.message);
         res.status(500).send({ message : 'Error Update Profile'});
+      }
+    })
+  );
+
+  userRoutes.delete(
+    '/delete/:id',
+    isAuth,
+    isAdmin,
+    expressAsyncHandler(async (req, res) => {
+      const user = await User.findById(req.params.id);
+      if (user) {
+        if (user.email === 'admin@example.com') {
+          res.status(400).send({ message: 'Can Not Delete Admin User' });
+          return;
+        }
+        await user.deleteOne();
+        res.send({ message: 'User Deleted' });
+      } else {
+        res.status(404).send({ message: 'User Not Found' });
       }
     })
   );
