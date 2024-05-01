@@ -69,7 +69,6 @@ orderRouter.put(
   orderRouter.put(
     '/:id',
     isAuth,
-    isAdmin,
     expressAsyncHandler(async (req, res) => {
       const order = await Order.findById(req.params.id);
       if (order) {
